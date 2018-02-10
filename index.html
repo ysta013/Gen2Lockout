@@ -3,21 +3,26 @@
     <head>
         <meta charset="UTF-8" />
         <title>Pokedex Lockout Prototype</title>
+        <link href="index.css" rel="stylesheet" type="text/css" />       
         <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
         <script src="js/adapter.js"></script>
         <script src="js/main.js"></script>
+        <script src="js/board.js"></script>
     </head>
     <body>
+        <div id="instructions" class="instructions">
+            THIS IS A PROTOTYPE, EXPECT BUGGINESS<br>
+            Since I'm not running a server or anything for this you have to set up the connection yourselves<br>
+            It's pretty easy though, one of you just picks "Initiate Connection", and the other picks "Join Connection"<br>
+            Then just do what it says, you'll need to send the connection info to each other via some sort of messaging like Discord<br><br>
+        </div>
         <div id="setup">
-            <button>
+            <button id="initiate-connection">Initiate Connection</button> <button id="join-connection">Join Connection</button>
         </div>
         <div id="board" style="display:none">
             hi hi hi
+            <button onclick="sendText('beep')">Beep</button>
+            <button onclick="sendText('boop')">Boop</button>
         </div>
-        <script type="text/javascript">
-            $(function () {
-                var dataChannel = peerConnection.createDataChannel("communication", options);
-            });
-        </script>
     </body>
 </html>

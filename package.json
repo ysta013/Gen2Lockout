@@ -1,7 +1,7 @@
 {
-  "name": "poxedex-lockout-prototype",
+  "name": "dev-server-for-game-jam",
   "version": "0.0.1",
-  "description": "Prototype for a pokedex lockout (similar to lokcout bingo",
+  "description": "development server for the jam game",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,5 +9,7 @@
   "author": "FelixNemis",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "express": "~4.13.4",
+    "serve-favicon": "~2.3.0"
   }
 }

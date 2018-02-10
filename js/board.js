@@ -1,0 +1,4 @@
+
+function makeBoard() {
+    $board = $("#board");
+}
