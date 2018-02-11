@@ -88,11 +88,11 @@
 
 
 #connection-status.good {
-    background: url(/img/ok.png);
+    background: url(img/ok.png);
 }
 #connection-status.warning {
-    background: url(/img/warning.png);
+    background: url(img/warning.png);
 }
 #connection-status.bad {
-    background: url(/img/bad.png);
+    background: url(img/bad.png);
 }

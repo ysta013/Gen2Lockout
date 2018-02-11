@@ -12,7 +12,7 @@ function makeBoard() {
     currentColor = (CONNECTION_INFO.connectionMode === "master") ? "color1" : "color2";
     $board = $("#board");
     for (var i = 0; i < MAX_POKEMON; i++) {
-        var bgStyle = "background: url(/img/poke_sprites.png)";
+        var bgStyle = "background: url(img/poke_sprites.png)";
         bgStyle += " -" + ((i % SRC_POKE_PER_ROW) * POKE_RESOLUTION) + "px";
         bgStyle += " -" + (Math.floor(i/SRC_POKE_PER_ROW) * POKE_RESOLUTION) + "px";
         var pokeImg = "<div class='poke-img' style='" + bgStyle + "'></div>";
