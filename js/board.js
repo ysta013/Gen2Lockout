@@ -27,8 +27,10 @@ function makeBoard() {
             $board.append("<br>");
         }
     }
-    if ((i%POKE_PER_ROW) >= POKE_PER_ROW - 3) {
+    // didn't just put in a linebreak, but within 3 of the end of the line
+    if ((i%POKE_PER_ROW) !== 0 && (i%POKE_PER_ROW) > POKE_PER_ROW - 3) {
         $board.append("<br>");
+        i += POKE_PER_ROW - (i%POKE_PER_ROW);
     }
 
     $board.append("<div class='square-thing'></div>");
@@ -38,13 +40,19 @@ function makeBoard() {
     $board.append("<div id='chooser-color2' class='" + classsss + "' onclick='chooseColor(\"color2\")'></div>");
 
     i += 3;
-    if ((i%POKE_PER_ROW) >= POKE_PER_ROW - 3) {
+    if ((i%POKE_PER_ROW) > POKE_PER_ROW - 3) {
         $board.append("<br>");
     }
 
     $board.append("<div id='connection-status' class='square-thing good' title='connection status'></div>");
     $board.append("<div id='poke-count-color1' class='square-thing text-color1'><div>0</div></div>");
     $board.append("<div id='poke-count-color2' class='square-thing text-color2'><div>0</div></div>");
+
+    i += 1;
+    if ((i%POKE_PER_ROW) > POKE_PER_ROW - 1) {
+        $board.append("<br>");
+    }
+    $board.append("<div id='new-game-button' class='square-thing'></div>");
 
     if (CONNECTION_INFO.connectionMode === "master") {
         lastSyncTime = $.now();
@@ -55,6 +63,19 @@ function makeBoard() {
             // we want to sync the boards, we'll use the master board
             forceBoardSyncMessage(false);
         }
+    });
+
+    $(".poke").mousedown(function (e) {
+        if (e.which === 3) {
+            $(this).toggleClass("marked");
+        }
+    });
+
+    $("#new-game-button").click(function () {
+        var btns = "<button id='yesbtn'>Yes</button><button id='nobtn'>No</button>";
+        $("#board").append("<div id='new-game-dialog'>Are you sure you want to clear the board? " + btns + "</div>");
+        $("#nobtn").click(function () {$("#new-game-dialog").remove();});
+        $("#yesbtn").click(function () {$("#new-game-dialog").remove(); newGame();});
     });
 }
 
@@ -134,8 +155,27 @@ function forceSyncBoard(theirBoard) {
             $poke.addClass(pokeColor);
         }
     }
+    updatePokeCounts();
     $("#sync-cover").hide();
     goodConnection();
+}
+
+function newGame() {
+    if (!CONNECTION_INFO.connected) {
+        clearBoard();
+        return false;
+    }
+    sendMessage("clearBoard", true);
+    clearBoard();
+    goodConnection(); // we know the board isn't out of sync
+}
+
+function clearBoard() {
+    for (var i = 1; i < MAX_POKEMON + 1; i++) {
+        var $poke = $(".poke[data-poke-id='" + i + "']");
+        $poke.removeClass("color1 color2 marked");
+    }
+    updatePokeCounts();
 }
 
 function serializeBoard() {

@@ -26,6 +26,14 @@
     vertical-align: middle;
 }
 
+#new-game-button {
+    background: url(img/new_game.png);
+}
+
+#new-game-button {
+    background: #eee, url(img/new_game.png);
+}
+
 .square-thing.color1 {
     background-color: #fdd;
 }
@@ -88,7 +96,6 @@
 .poke.color1 {
     background-color: #f66;
 }
-
 .poke.color1:hover {
     background-color: #fbb;
 }
@@ -96,10 +103,62 @@
 .poke.color2 {
     background-color: #66f;
 }
-
 .poke.color2:hover {
     background-color: #bbf;
 }
+
+/* Marking for local reference */
+.poke.marked {
+    background: repeating-linear-gradient(
+        45deg,
+        #222, #222 6.25%,
+        #fff 6.25%, #fff 18.75%,
+        #222 18.75%, #222 25%
+    );
+}
+.poke.marked:hover {
+    background: repeating-linear-gradient(
+        45deg,
+        #777, #777 6.25%,
+        #eee 6.25%, #eee 18.75%,
+        #777 18.75%, #777 25%
+    );
+}
+
+.poke.marked.color1 {
+    background: repeating-linear-gradient(
+        45deg,
+        #222, #222 6.25%,
+        #f66 6.25%, #f66 18.75%,
+        #222 18.75%, #222 25%
+    );
+}
+.poke.marked.color1:hover {
+    background: repeating-linear-gradient(
+        45deg,
+        #777, #777 6.25%,
+        #fbb 6.25%, #fbb 18.75%,
+        #777 18.75%, #777 25%
+    );
+}
+
+.poke.marked.color2 {
+    background: repeating-linear-gradient(
+        45deg,
+        #222, #222 6.25%,
+        #66f 6.25%, #66f 18.75%,
+        #222 18.75%, #222 25%
+    );
+}
+.poke.marked.color2:hover {
+    background: repeating-linear-gradient(
+        45deg,
+        #777, #777 6.25%,
+        #bbf 6.25%, #bbf 18.75%,
+        #777 18.75%, #777 25%
+    );
+}
+/* END Marking for local reference */
 
 
 #connection-status.good {

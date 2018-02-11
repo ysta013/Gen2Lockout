@@ -1,3 +1,4 @@
+
 var CFG = {'iceServers': [{'urls': "stun:stun.beam.pro"}, {'urls': "stun:stun.gmx.net"}]};
 var CON = {'optional': [{'DtlsSrtpKeyAgreement': true}]};
 var sdpConstraints = {optional: []};
@@ -113,6 +114,9 @@ function dataChannelCallbacks(dc) {
             if (data.type === "poke-event") {
                 receivedPokeEvent(data['event-data']);
             }
+            if (data.type === "clearBoard") {
+                clearBoard();
+            }
         }
     };
 }
@@ -125,12 +129,21 @@ function connectionReady() {
     $("#board").show();
 
     makeBoard();
+    goodConnection();
     lastMessageTime = $.now();
     CONNECTION_INFO.heartbeat = window.setInterval(heartbeat, 1000);
+
+    // disable context menu on right click on the board
+    $("#board").on("contextmenu", function(e){
+        e.preventDefault();
+        return false;
+    });
 }
 
 function heartbeat() {
-    sendHeartbeat();
+    try {
+        sendHeartbeat();
+    } catch (e) {}
     if (CONNECTION_INFO.connected) {
         if ($.now() - lastMessageTime > CONNECTION_DEAD_AFTER) {
             badConnection();
