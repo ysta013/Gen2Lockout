@@ -6,6 +6,11 @@ var POKE_RESOLUTION = 32;
 
 var currentColor = "color1";
 
+
+var lastSyncTime = null;
+// interval in miliseconds to check if the boards are in sync
+var SYNC_INTERVAL = 15000;
+
 function makeBoard() {
     POKE_PER_ROW = Number($("#poke-per-row").val());
 
@@ -41,17 +46,64 @@ function makeBoard() {
     $board.append("<div id='poke-count-color1' class='square-thing text-color1'><div>0</div></div>");
     $board.append("<div id='poke-count-color2' class='square-thing text-color2'><div>0</div></div>");
 
-    peerConnection.onconnectionstatechange = function (e) {
-        switch(peerConnection.connectionState) {
-            case "connecting":
-            case "connected":
+    if (CONNECTION_INFO.connectionMode === "master") {
+        lastSyncTime = $.now();
+    }
+}
+
+function boardSync() {
+    if ($.now() - lastSyncTime > SYNC_INTERVAL) {
+        sendMessage("sync", {"sync_event": "start"});
+        $("#sync-cover").show();
+    }
+}
+
+function syncHandler(syncData) {
+    switch (syncData.sync_event) {
+        case "start":
+            sendMessage("sync", {"sync_event": "start-received"});
+            $("#sync-cover").show();
+            break;
+        case "start-received":
+            var boardData = serializeBoard();
+            sendMessage("sync", {"sync_event": "sync-board", "board_data": boardData});
+            break;
+        case "sync-board":
+            var result = compareBoard(syncData.board_data);
+            sendMessage("sync", {"sync_event": "sync-board-response", "result": result});
+            if (!result) {
+                connectionWarning();
+            } else if ($("#connection-status").hasClass("warning")) {
                 goodConnection();
-            case "disconnected":
-            case "failed":
-            case "closed":
-                badConnection();
-        }
-    };
+            }
+            $("#sync-cover").hide();
+            break;
+        case "sync-board-response":
+            lastSyncTime = $.now();
+            if (!syncData.result) {
+                connectionWarning();
+            } else if ($("#connection-status").hasClass("warning")) {
+                goodConnection();
+            }
+            $("#sync-cover").hide();
+            break;
+    }
+}
+
+function compareBoard(theirBoard) {
+    var myBoard = serializeBoard();
+    return JSON.stringify(myBoard) === JSON.stringify(theirBoard);
+}
+
+function serializeBoard() {
+    $pokes = $(".poke");
+    var data = {};
+    $pokes.each(function (i, elem) {
+        var $elem = $(elem);
+        var color = $elem.hasClass("color1") ? "color1" : ($elem.hasClass("color2") ? "color2" : "none");
+        data[$elem.attr("data-poke-id")] = {"color": color};
+    });
+    return data;
 }
 
 function goodConnection() {
@@ -59,6 +111,8 @@ function goodConnection() {
     $("#connection-status").removeClass("bad");
     $("#connection-status").removeClass("warning");
     $("#connection-status").addClass("good");
+
+    $("#connection-status").attr("title", "Connected");
 }
 
 function badConnection() {
@@ -66,6 +120,16 @@ function badConnection() {
     $("#connection-status").removeClass("good");
     $("#connection-status").removeClass("warning");
     $("#connection-status").addClass("bad");
+
+    $("#connection-status").attr("title", "Connection Lost");
+}
+
+function connectionWarning() {
+    $("#connection-status").removeClass("good");
+    $("#connection-status").removeClass("bad");
+    $("#connection-status").addClass("warning");
+
+    $("#connection-status").attr("title", "Pokedex Out Of Sync (click to synchronize)");
 }
 
 function pokeClick(poke) {

@@ -10,6 +10,10 @@ var CONNECTION_INFO = {
 var peerConnection = new RTCPeerConnection(CFG, CON);
 var dataChannel = null;
 
+var lastMessageTime = null;
+// connection is considered dead after this long without a message (we try to send a heartbeat every second so this shouldn't happen)
+var CONNECTION_DEAD_AFTER = 2200;
+
 // when we need to send a message to the other person, do it like this
 peerConnection.onicecandidate = function (e) {
     if (e.candidate === null) {
@@ -52,16 +56,6 @@ peerConnection.ondatachannel = function (e) {
     connectionReady();
 };
 
-peerConnection.onpeeridentity = function (e) {
-    console.log("PEER IDENTitY!");
-    console.log(e);
-};
-
-peerConnection.onidentityresult = function (e) {
-    console.log("PEER IDENTitY RESULT!");
-    console.log(e);
-};
-
 $(function () {
     $("#initiate-connection").click(function () {
         console.log("now in master mode");
@@ -100,6 +94,11 @@ $(function () {
 function dataChannelCallbacks(dc) {
     dc.onopen = function(e) { };
     dc.onmessage = function(e) {
+        lastMessageTime = $.now();
+        if (!CONNECTION_INFO.connected) {
+            // the connection is back apparently
+            goodConnection();
+        }
         if (e.data.size) {
             console.log("theres a size?");
         } else {
@@ -108,8 +107,8 @@ function dataChannelCallbacks(dc) {
                 return;
             }
             var data = JSON.parse(e.data);
-            if (data.message) {
-                //$("#board").append(data.message);
+            if (data.type === "sync") {
+                syncHandler(data.data);
             }
             if (data.type === "poke-event") {
                 receivedPokeEvent(data['event-data']);
@@ -126,14 +125,36 @@ function connectionReady() {
     $("#board").show();
 
     makeBoard();
+    lastMessageTime = $.now();
+    CONNECTION_INFO.heartbeat = window.setInterval(heartbeat, 1000);
 }
 
-function sendText(text) {
+function heartbeat() {
+    sendHeartbeat();
+    if (CONNECTION_INFO.connected) {
+        if ($.now() - lastMessageTime > CONNECTION_DEAD_AFTER) {
+            badConnection();
+        }
+    }
+    if (CONNECTION_INFO.connectionMode === "master") {
+        boardSync();
+    }
+}
+
+function sendHeartbeat() {
     if (!CONNECTION_INFO.connected) {
         console.log("Not connected!");
-        return;
+        return false;
     }
-    dataChannel.send(JSON.stringify({message: text}));
+    dataChannel.send(JSON.stringify({"type": "heartbeat"}));
+}
+
+function sendMessage(type, data) {
+    if (!CONNECTION_INFO.connected) {
+        console.log("Not connected!");
+        return false;
+    }
+    dataChannel.send(JSON.stringify({"type": type, "data": data}));
 }
 
 function sendEvent(eventData) {
