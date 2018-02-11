@@ -49,6 +49,29 @@ function makeBoard() {
     if (CONNECTION_INFO.connectionMode === "master") {
         lastSyncTime = $.now();
     }
+
+    $("#connection-status").click(function() {
+        if ($(this).hasClass("warning")) {
+            // we want to sync the boards, we'll use the master board
+            forceBoardSyncMessage(false);
+        }
+    });
+}
+
+function forceBoardSyncMessage(notMe) {
+    $("#sync-cover").show();
+    if (notMe) {
+        if (CONNECTION_INFO.connectionMode === "master") {
+            var boardData = serializeBoard();
+            sendMessage("sync", {"sync_event": "force-sync", "board_data": boardData});
+            $("#sync-cover").hide();
+            goodConnection();
+        } else {
+            sendMessage("sync", {"sync_event": "force-sync-request"});
+        }
+    } else {
+        sendMessage("sync", {"sync_event": "force-sync-request"});
+    }
 }
 
 function boardSync() {
@@ -87,12 +110,32 @@ function syncHandler(syncData) {
             }
             $("#sync-cover").hide();
             break;
+        case "force-sync":
+            forceSyncBoard(syncData.board_data);
+            break;
+        case "force-sync-request":
+            forceBoardSyncMessage(true);
+            break;
     }
 }
 
 function compareBoard(theirBoard) {
     var myBoard = serializeBoard();
     return JSON.stringify(myBoard) === JSON.stringify(theirBoard);
+}
+
+function forceSyncBoard(theirBoard) {
+    for (var i = 1; i < MAX_POKEMON + 1; i++) {
+        var pokeColor = theirBoard[i].color;
+        var $poke = $(".poke[data-poke-id='" + i + "']");
+        $poke.removeClass("color1");
+        $poke.removeClass("color2");
+        if (pokeColor === "color1" || pokeColor === "color2") {
+            $poke.addClass(pokeColor);
+        }
+    }
+    $("#sync-cover").hide();
+    goodConnection();
 }
 
 function serializeBoard() {
