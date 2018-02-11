@@ -85,3 +85,14 @@
 .poke.color2:hover {
     background-color: #bbf;
 }
+
+
+#connection-status.good {
+    background: url(/img/ok.png);
+}
+#connection-status.warning {
+    background: url(/img/warning.png);
+}
+#connection-status.bad {
+    background: url(/img/bad.png);
+}

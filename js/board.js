@@ -37,9 +37,35 @@ function makeBoard() {
         $board.append("<br>");
     }
 
-    $board.append("<div class='square-thing'></div>");
+    $board.append("<div id='connection-status' class='square-thing good' title='connection status'></div>");
     $board.append("<div id='poke-count-color1' class='square-thing text-color1'><div>0</div></div>");
     $board.append("<div id='poke-count-color2' class='square-thing text-color2'><div>0</div></div>");
+
+    peerConnection.onconnectionstatechange = function (e) {
+        switch(peerConnection.connectionState) {
+            case "connecting":
+            case "connected":
+                goodConnection();
+            case "disconnected":
+            case "failed":
+            case "closed":
+                badConnection();
+        }
+    };
+}
+
+function goodConnection() {
+    CONNECTION_INFO.connected = true;
+    $("#connection-status").removeClass("bad");
+    $("#connection-status").removeClass("warning");
+    $("#connection-status").addClass("good");
+}
+
+function badConnection() {
+    CONNECTION_INFO.connected = false;
+    $("#connection-status").removeClass("good");
+    $("#connection-status").removeClass("warning");
+    $("#connection-status").addClass("bad");
 }
 
 function pokeClick(poke) {
