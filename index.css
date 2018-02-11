@@ -3,10 +3,85 @@
     color:#963535;
 }
 
-.color1 {
-    background-color: #f00;
+.square-thing {
+    width: 26px;
+    height: 26px;
+    display: inline-block;
+    border:solid 3px #fff;
+    vertical-align: middle;
 }
 
-.color2 {
-    background-color: #00f;
+.square-thing.color1 {
+    background-color: #fdd;
+}
+.square-thing.color1:hover {
+    background-color: #fbb;
+}
+.square-thing.color1.chosen,.square-thing.color1.chosen:hover {
+    background-color: #f66;
+}
+
+.square-thing.color2 {
+    background-color: #ddf;
+}
+.square-thing.color2:hover {
+    background-color: #bbf;
+}
+.square-thing.color2.chosen,.square-thing.color2.chosen:hover {
+    background-color: #66f;
+}
+
+.text-color1 {
+    text-align:center;
+    color: #b22;
+
+    font-weight: bold;
+}
+.text-color1 div {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%); 
+}
+.text-color2 {
+    text-align:center;
+    color: #22b;
+
+    font-weight: bold;
+}
+.text-color2 div {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%); 
+}
+
+.poke-img {
+    width: 32px;
+    height: 32px;
+}
+
+.poke {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.poke:hover {
+    background-color: #eee;
+}
+
+.poke.color1 {
+    background-color: #f66;
+}
+
+.poke.color1:hover {
+    background-color: #fbb;
+}
+
+.poke.color2 {
+    background-color: #66f;
+}
+
+.poke.color2:hover {
+    background-color: #bbf;
 }

@@ -111,15 +111,21 @@ function dataChannelCallbacks(dc) {
             if (data.message) {
                 //$("#board").append(data.message);
             }
+            if (data.type === "poke-event") {
+                receivedPokeEvent(data['event-data']);
+            }
         }
     };
 }
 
 function connectionReady() {
     $("#instructions").hide();
+    $("#start-settings").hide();
     $("#setup").hide();
 
     $("#board").show();
+
+    makeBoard();
 }
 
 function sendText(text) {
@@ -128,6 +134,14 @@ function sendText(text) {
         return;
     }
     dataChannel.send(JSON.stringify({message: text}));
+}
+
+function sendEvent(eventData) {
+    if (!CONNECTION_INFO.connected) {
+        console.log("Not connected!");
+        return;
+    }
+    dataChannel.send(JSON.stringify({"type": "poke-event", "event-data": eventData}));
 }
 
 
