@@ -99,12 +99,43 @@
 .poke.color1:hover {
     background-color: #fbb;
 }
+.poke.color1.last-picked {
+    animation-duration: 0.6s;
+    animation-name: pulse1;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
 
 .poke.color2 {
     background-color: #66f;
 }
 .poke.color2:hover {
     background-color: #bbf;
+}
+.poke.color2.last-picked {
+    animation-duration: 0.6s;
+    animation-name: pulse2;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes pulse1 {
+  from {
+    background-color: #f66;
+  }
+  to {
+    background-color: #222;
+  }
+}
+
+@keyframes pulse2 {
+  from {
+    background-color: #66f;
+  }
+
+  to {
+    background-color: #222;
+  }
 }
 
 /* Marking for local reference */

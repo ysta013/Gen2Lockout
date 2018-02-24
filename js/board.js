@@ -4,6 +4,8 @@ var SRC_POKE_PER_ROW = 13;
 var POKE_PER_ROW = 16;
 var POKE_RESOLUTION = 32;
 
+var SHOW_LAST_SELECTED = false;
+
 var currentColor = "color1";
 
 
@@ -13,6 +15,7 @@ var SYNC_INTERVAL = 15000;
 
 function makeBoard() {
     POKE_PER_ROW = Number($("#poke-per-row").val());
+    SHOW_LAST_SELECTED = $("#show-last-selected").prop("checked");
 
     currentColor = (CONNECTION_INFO.connectionMode === "master") ? "color1" : "color2";
     $board = $("#board");
@@ -40,7 +43,7 @@ function makeBoard() {
     $board.append("<div id='chooser-color2' class='" + classsss + "' onclick='chooseColor(\"color2\")'></div>");
 
     i += 3;
-    if ((i%POKE_PER_ROW) > POKE_PER_ROW - 3) {
+    if ((i%POKE_PER_ROW) > POKE_PER_ROW - 3 || i % POKE_PER_ROW === 0) {
         $board.append("<br>");
     }
 
@@ -49,7 +52,7 @@ function makeBoard() {
     $board.append("<div id='poke-count-color2' class='square-thing text-color2'><div>0</div></div>");
 
     i += 1;
-    if ((i%POKE_PER_ROW) > POKE_PER_ROW - 1) {
+    if (i % POKE_PER_ROW === 0) {
         $board.append("<br>");
     }
     $board.append("<div id='new-game-button' class='square-thing'></div>");
@@ -149,8 +152,7 @@ function forceSyncBoard(theirBoard) {
     for (var i = 1; i < MAX_POKEMON + 1; i++) {
         var pokeColor = theirBoard[i].color;
         var $poke = $(".poke[data-poke-id='" + i + "']");
-        $poke.removeClass("color1");
-        $poke.removeClass("color2");
+        $poke.removeClass("color1 color2 last-picked");
         if (pokeColor === "color1" || pokeColor === "color2") {
             $poke.addClass(pokeColor);
         }
@@ -173,7 +175,7 @@ function newGame() {
 function clearBoard() {
     for (var i = 1; i < MAX_POKEMON + 1; i++) {
         var $poke = $(".poke[data-poke-id='" + i + "']");
-        $poke.removeClass("color1 color2 marked");
+        $poke.removeClass("color1 color2 marked last-picked");
     }
     updatePokeCounts();
 }
@@ -256,6 +258,10 @@ function setPoke(poke_id, color) {
         return false; // can't set it
     } else {
         $poke.addClass(color);
+        if (SHOW_LAST_SELECTED) {
+            $(".poke").removeClass("last-picked");
+            $poke.addClass("last-picked");
+        }
         return true; // set it
     }
 }
